@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Caching.Memory;
 using Veriton.Application.Interfaces.Repositories;
 using Veriton.Application.Interfaces.Security;
+using Veriton.Domain.Entities;
 
 namespace Veriton.API.Controllers;
 
@@ -16,15 +17,18 @@ public class AuthController : ControllerBase
     private readonly IUserRepository _userRepository;
     private readonly IJwtTokenService _jwtService;
     private readonly IMemoryCache _cache;
+    private readonly IGenericRepository<Learner> _learnerRepository;
 
     public AuthController(
         IUserRepository userRepository,
         IJwtTokenService jwtService,
-        IMemoryCache cache)
+        IMemoryCache cache,
+        IGenericRepository<Learner> learnerRepository)
     {
         _userRepository = userRepository;
         _jwtService = jwtService;
         _cache = cache;
+        _learnerRepository = learnerRepository;
     }
 
     [HttpPut("change-password")]
@@ -74,6 +78,20 @@ public class AuthController : ControllerBase
         if (!string.IsNullOrEmpty(request.LastName)) newUser.LastName = request.LastName;
 
         await _userRepository.AddAsync(newUser);
+
+        if (newUser.Role.Equals("Learner", StringComparison.OrdinalIgnoreCase))
+        {
+            var learner = new Learner
+            {
+                UserId = newUser.Id,
+                FirstName = request.FirstName ?? "",
+                LastName = request.LastName ?? "",
+                Email = request.Email.Trim().ToLower(),
+                LearnerId = "L-" + DateTime.UtcNow.Ticks.ToString().Substring(10),
+                IsActive = true
+            };
+            await _learnerRepository.AddAsync(learner);
+        }
 
         return Ok(new { message = "Registration successful" });
     }

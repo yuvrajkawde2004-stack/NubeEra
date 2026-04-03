@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Loader2, AlertCircle, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -150,16 +150,7 @@ const Login: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center">
-              <input
-                id="keep-logged-in"
-                type="checkbox"
-                checked={keepLoggedIn}
-                onChange={(e) => setKeepLoggedIn(e.target.checked)}
-                className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
-              />
-              <label htmlFor="keep-logged-in" className="ml-2 block text-sm text-slate-600 font-medium">Keep me logged in</label>
-            </div>
+
 
             <button
               type="submit"
@@ -173,10 +164,13 @@ const Login: React.FC = () => {
               )}
             </button>
 
-            <div className="pt-4 text-center">
-              <p className="text-sm text-slate-500">
-                Don't have an account? <a href="#" className="text-indigo-600 font-bold hover:underline">Register now</a>
-              </p>
+            <div className="pt-6 border-t border-slate-100 text-center">
+              <span className="text-sm text-slate-500">
+                Don't have an account?{' '}
+                <Link to="/register" className="font-semibold text-slate-900 hover:underline transition-colors">
+                  Register now
+                </Link>
+              </span>
             </div>
           </form>
         </div>
@@ -188,26 +182,26 @@ const Login: React.FC = () => {
 
       {/* Recover Access Modal */}
       {showForgotModal && (
-        <div className="fixed inset-0 bg-[#020617]/80 backdrop-blur-2xl flex items-center justify-center z-50 p-6 animate-in fade-in duration-500">
-          <div className="bg-[#0f172a] w-full max-w-md rounded-[40px] border border-slate-900/10 shadow-2xl animate-in zoom-in-95 duration-500 overflow-hidden">
-            <div className="p-10 border-b border-slate-900/5 flex items-center justify-between">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-50 p-6 animate-in fade-in duration-500">
+          <div className="bg-white w-full max-w-md rounded-[40px] border border-slate-200 shadow-2xl animate-in zoom-in-95 duration-500 overflow-hidden">
+            <div className="p-10 border-b border-slate-100 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Recover Access</h2>
                 <p className="text-[11px] text-indigo-600 font-bold uppercase tracking-widest mt-2">Verification Loop Required</p>
               </div>
-              <button onClick={closeForgotModal} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-900/5 hover:bg-rose-500/20 text-slate-600 hover:text-rose-400 transition-all border border-slate-900/5">
+              <button onClick={closeForgotModal} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-500 transition-all border border-slate-100">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleForgotPassword} className="p-10 space-y-8">
               {forgotError && (
-                <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-[11px] font-bold text-rose-400 uppercase tracking-widest">
+                <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-[11px] font-bold text-rose-600 uppercase tracking-widest">
                   {forgotError}
                 </div>
               )}
               {forgotSuccess && (
-                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-[11px] font-bold text-emerald-600 uppercase tracking-widest">
+                <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-[11px] font-bold text-emerald-600 uppercase tracking-widest">
                   {forgotSuccess}
                 </div>
               )}
@@ -215,14 +209,14 @@ const Login: React.FC = () => {
               {forgotStep === 'request' ? (
                 <div>
                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3 block ml-1">Registered Identifier</label>
-                  <input
-                    type="email"
-                    required
-                    value={forgotEmail}
-                    onChange={(e) => setForgotEmail(e.target.value)}
-                    className="w-full bg-slate-900/5 border border-slate-900/10 rounded-2xl py-4 px-6 text-base font-medium text-slate-900 focus:outline-none focus:border-indigo-500/50 focus:bg-slate-900/10 transition-all shadow-inner"
-                    placeholder="Enter email to receive code"
-                  />
+                    <input
+                      type="email"
+                      required
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      className="w-full bg-white border border-slate-200 rounded-xl py-3.5 px-4 text-base font-medium text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm"
+                      placeholder="Enter email to receive code"
+                    />
                 </div>
               ) : (
                 <>
@@ -233,7 +227,7 @@ const Login: React.FC = () => {
                       required
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
-                      className="w-full bg-slate-900/5 border border-slate-900/10 rounded-2xl py-4 px-6 text-xl font-black text-indigo-600 tracking-[0.6em] text-center focus:outline-none focus:border-indigo-500/50 focus:bg-slate-900/10 transition-all shadow-inner"
+                      className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 text-xl font-black text-indigo-600 tracking-[0.6em] text-center focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                     />
                   </div>
                   <div>
@@ -243,7 +237,7 @@ const Login: React.FC = () => {
                       required
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full bg-slate-900/5 border border-slate-900/10 rounded-2xl py-4 px-6 text-base font-medium text-slate-900 focus:outline-none focus:border-indigo-500/50 focus:bg-slate-900/10 transition-all shadow-inner"
+                      className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 text-base font-medium text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                       placeholder="••••••••"
                     />
                   </div>
@@ -251,8 +245,8 @@ const Login: React.FC = () => {
               )}
 
               <div className="flex gap-4 pt-4">
-                <button type="button" onClick={closeForgotModal} className="ag-btn ag-btn-secondary flex-1 py-4 !rounded-2xl text-[11px] font-bold uppercase tracking-widest">Abort</button>
-                <button type="submit" disabled={forgotLoading} className="ag-btn ag-btn-primary flex-1 py-4 !rounded-2xl text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-indigo-500/10">
+                <button type="button" onClick={closeForgotModal} className="flex-1 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest bg-slate-50 text-slate-500 hover:bg-slate-100 transition-all">Abort</button>
+                <button type="submit" disabled={forgotLoading} className="flex-1 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest bg-[#0f172a] hover:bg-[#1e293b] text-white shadow-lg shadow-slate-900/10 transition-all disabled:opacity-70">
                   {forgotLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (forgotStep === 'request' ? 'Request Code' : 'Synchronize')}
                 </button>
               </div>

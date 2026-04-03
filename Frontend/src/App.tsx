@@ -8,6 +8,7 @@ import Users from './pages/Users';
 import Modules from './pages/Modules';
 import Lessons from './pages/Lessons';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import CreateStaff from './pages/CreateStaff';
 import UpdateProfile from './pages/UpdateProfile';
 import StaffDashboard from './pages/StaffDashboard';
@@ -93,6 +94,7 @@ const App: React.FC = () => {
         } />
 
         <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to={getDefaultPath()} />} />
+        <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to={getDefaultPath()} />} />
 
         <Route
           path="/*"

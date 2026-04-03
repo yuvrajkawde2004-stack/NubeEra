@@ -10,20 +10,20 @@ public static class AdminSeeder
     public static void Seed(AppDbContext context, IConfiguration configuration)
     {
         // Admin Credentials from Config or Defaults
-        string adminEmail = configuration["Seed:AdminEmail"] ?? "staff@gmail.com";
-        string adminPassword = configuration["Seed:AdminPassword"] ?? "Staff@123";
+        string adminEmail = configuration["Seed:AdminEmail"] ?? "s@gmail.com";
+        string adminPassword = configuration["Seed:AdminPassword"] ?? "stl@123";
 
         // 1. Staff Admin
         SeedUser(context, adminEmail, adminPassword, AppRoles.Staff, "Antigravity", "Staff");
 
         // 2. Extra Staff
-        SeedUser(context, "staff1@gmail.com", "Staff@123", AppRoles.Staff, "Support", "One");
+        SeedUser(context, "staff1@gmail.com", "stl@123", AppRoles.Staff, "Support", "One");
 
         // 3. Trainer User
-        SeedTrainer(context, "trainer1@gmail.com", "Staff@123", "TRAIN-001", "Lead", "Trainer");
+        SeedTrainer(context, "t@gmail.com", "stl@123", "TRAIN-001", "Lead", "Trainer");
 
         // 4. Learner User
-        SeedLearner(context, "learner1@gmail.com", "Staff@123", "LEARN-001", "Active", "Learner");
+        SeedLearner(context, "l@gmail.com", "stl@123", "LEARN-001", "Active", "Learner");
 
         context.SaveChanges();
     }
@@ -46,7 +46,7 @@ public static class AdminSeeder
 
     private static void SeedTrainer(AppDbContext context, string email, string password, string trainerId, string firstName, string lastName)
     {
-        if (!context.Users.Any(u => u.Email == email))
+        if (!context.Users.Any(u => u.Email == email) && !context.Trainers.Any(t => t.TrainerId == trainerId))
         {
             var user = new User(
                 email: email,
@@ -74,7 +74,7 @@ public static class AdminSeeder
 
     private static void SeedLearner(AppDbContext context, string email, string password, string learnerId, string firstName, string lastName)
     {
-        if (!context.Users.Any(u => u.Email == email))
+        if (!context.Users.Any(u => u.Email == email) && !context.Learners.Any(l => l.LearnerId == learnerId))
         {
             var user = new User(
                 email: email,

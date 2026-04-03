@@ -1,7 +1,7 @@
 services:
-  veriton-mysql:
+  lxp-mysql:
     image: mysql:8.0
-    container_name: veriton-mysql
+    container_name: lxp-mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -9,7 +9,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - veriton_mysql_data:/var/lib/mysql
+      - lxp_mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -p$$MYSQL_ROOT_PASSWORD --silent || exit 1"]
       interval: 10s
@@ -17,48 +17,48 @@ services:
       retries: 20
       start_period: 40s
     networks:
-      - veriton-network
+      - lxp-network
 
-  veriton-api:
+  lxp-api:
     build:
       context: ./Backend
       dockerfile: Veriton.API/Dockerfile
-    container_name: veriton-api
+    container_name: lxp-api
     depends_on:
-      veriton-mysql:
+      lxp-mysql:
         condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://0.0.0.0:5000
-      ConnectionStrings__MySql: Server=veriton-mysql;Port=3306;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};SslMode=None;AllowPublicKeyRetrieval=True
+      ConnectionStrings__MySql: Server=lxp-mysql;Port=3306;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};SslMode=None;AllowPublicKeyRetrieval=True
       Jwt__Key: ${JWT_KEY}
       Jwt__Issuer: ${JWT_ISSUER}
       Jwt__Audience: ${JWT_AUDIENCE}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
     ports:
-      - "5000:5000"
+      - "5001:5000"
     restart: unless-stopped
     networks:
-      - veriton-network
+      - lxp-network
 
-  veriton-frontend:
+  lxp-frontend:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL}
-    container_name: veriton-frontend
+        VITE_API_URL: /api
+    container_name: lxp-frontend
     depends_on:
-      - veriton-api
+      - lxp-api
     ports:
-      - "5173:80"
+      - "5174:80"
     restart: unless-stopped
     networks:
-      - veriton-network
+      - lxp-network
 
 volumes:
-  veriton_mysql_data:
+  lxp_mysql_data:
 
 networks:
-  veriton-network:
+  lxp-network:
     driver: bridge
