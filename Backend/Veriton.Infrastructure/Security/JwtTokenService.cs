@@ -31,13 +31,13 @@ public class JwtTokenService : IJwtTokenService
         // Include TrainerId if applicable
         if (user.TrainerProfile != null)
         {
-            claims.Add(new Claim("TrainerId", user.TrainerProfile.Id.ToString()));
+            claims.Add(new System.Security.Claims.Claim("TrainerId", user.TrainerProfile.Id.ToString()));
         }
 
         // Include LearnerId if applicable
         if (user.LearnerProfile != null)
         {
-            claims.Add(new Claim("LearnerId", user.LearnerProfile.Id.ToString()));
+            claims.Add(new System.Security.Claims.Claim("LearnerId", user.LearnerProfile.Id.ToString()));
         }
 
         var key = new SymmetricSecurityKey(

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -46,22 +48,52 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(optio
     options.MemoryBufferThreshold = int.MaxValue;
 });
 
-// JWT Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+// Authentication (JWT + Social)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+    };
+})
+.AddCookie("ExternalCookie") // Temporary scheme for external login
+.AddGoogle(options =>
+{
+    options.SignInScheme = "ExternalCookie";
+    options.ClientId = builder.Configuration["Google:ClientId"] ?? "PLACEHOLDER";
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"] ?? "PLACEHOLDER";
+    options.CallbackPath = "/api/signin-google";
+})
+.AddGitHub(options =>
+{
+    options.SignInScheme = "ExternalCookie";
+    options.ClientId = builder.Configuration["GitHub:ClientId"] ?? "PLACEHOLDER";
+    options.ClientSecret = builder.Configuration["GitHub:ClientSecret"] ?? "PLACEHOLDER";
+    options.Scope.Add("user:email");
+    options.CallbackPath = "/api/signin-github";
+})
+.AddLinkedIn(options =>
+{
+    options.SignInScheme = "ExternalCookie";
+    options.ClientId = builder.Configuration["LinkedIn:ClientId"] ?? "PLACEHOLDER";
+    options.ClientSecret = builder.Configuration["LinkedIn:ClientSecret"] ?? "PLACEHOLDER";
+    options.Scope.Add("openid");
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
+    options.CallbackPath = "/api/signin-linkedin";
+});
 
 // Authorization
 builder.Services.AddAuthorization(options =>

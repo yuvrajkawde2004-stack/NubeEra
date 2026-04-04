@@ -40,5 +40,20 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             .Include(u => u.LearnerProfile)
             .FirstOrDefaultAsync(x => (x.Email == identifier || x.Phone == identifier) && x.IsActive);
     }
+
+    public async Task<User?> GetByExternalProviderAsync(string provider, string providerId, Func<IQueryable<User>, IQueryable<User>>? include = null)
+    {
+        IQueryable<User> query = _dbSet;
+        
+        if (include != null)
+        {
+            query = include(query);
+        }
+
+        return await query
+            .Include(u => u.TrainerProfile)
+            .Include(u => u.LearnerProfile)
+            .FirstOrDefaultAsync(x => x.ExternalProvider == provider && x.ExternalId == providerId && x.IsActive);
+    }
 }
 

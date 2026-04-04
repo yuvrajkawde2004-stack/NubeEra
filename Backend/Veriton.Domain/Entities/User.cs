@@ -13,6 +13,9 @@ public class User : BaseEntity
     public bool IsActive { get; private set; } = true;
     public DateTime? LastLoginAt { get; set; }
 
+    public string? ExternalProvider { get; set; }
+    public string? ExternalId { get; set; }
+
     // Navigation Properties
     public Trainer? TrainerProfile { get; set; }
     public Learner? LearnerProfile { get; set; }
@@ -26,6 +29,20 @@ public class User : BaseEntity
         PasswordHash = passwordHash;
         Role = role;
         CreatedAt = DateTime.UtcNow;
+    }
+
+    public static User CreateExternal(string email, string provider, string providerId, string role = "Learner")
+    {
+        return new User
+        {
+            Id = Guid.NewGuid(),
+            Email = email,
+            ExternalProvider = provider,
+            ExternalId = providerId,
+            Role = role,
+            PasswordHash = "EXTERNAL_OAUTH_USER", // Marker to indicate no local password
+            CreatedAt = DateTime.UtcNow
+        };
     }
 
 

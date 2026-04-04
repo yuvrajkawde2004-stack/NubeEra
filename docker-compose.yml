@@ -35,6 +35,13 @@ services:
       Jwt__Issuer: ${JWT_ISSUER}
       Jwt__Audience: ${JWT_AUDIENCE}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      Google__ClientId: ${GOOGLE_CLIENT_ID}
+      Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
+      GitHub__ClientId: ${GITHUB_CLIENT_ID}
+      GitHub__ClientSecret: ${GITHUB_CLIENT_SECRET}
+      LinkedIn__ClientId: ${LINKED_CLIENT_ID}
+      LinkedIn__ClientSecret: ${LINKED_CLIENT_SECRET}
+      Frontend__Url: ${FRONTEND_URL}
     ports:
       - "5001:5000"
     restart: unless-stopped
