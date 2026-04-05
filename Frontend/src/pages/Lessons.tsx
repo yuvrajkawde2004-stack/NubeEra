@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Edit, Trash2, BookText, Video, User, ArrowLeft, Clock, X, ChevronRight, Play, Layers, Plus } from 'lucide-react';
+import { Search, Edit, Trash2, BookText, Video, ArrowLeft, Clock, X, ChevronRight, Play, Layers, Plus } from 'lucide-react';
 import api from '../services/api';
 import { toast } from 'sonner';
 import ConfirmModal from '../components/ConfirmModal';
@@ -40,18 +40,17 @@ const Lessons: React.FC = () => {
   const getEmbedUrl = (url: string) => {
     if (!url) return '';
     try {
+      let embedUrl = url;
       if (url.includes('youtu.be/')) {
         const id = url.split('youtu.be/')[1]?.split('?')[0];
-        return `https://www.youtube.com/embed/${id}`;
-      }
-      if (url.includes('youtube.com/watch?v=')) {
+        embedUrl = `https://www.youtube.com/embed/${id}`;
+      } else if (url.includes('youtube.com/watch?v=')) {
         const id = url.split('v=')[1]?.split('&')[0];
-        return `https://www.youtube.com/embed/${id}`;
+        embedUrl = `https://www.youtube.com/embed/${id}`;
       }
-      if (url.includes('youtube.com/embed/')) {
-        return url;
-      }
-      return url;
+      
+      const separator = embedUrl.includes('?') ? '&' : '?';
+      return `${embedUrl}${separator}rel=0&modestbranding=1&autoplay=0`;
     } catch (e) {
       return url;
     }
@@ -209,6 +208,9 @@ const Lessons: React.FC = () => {
   const isStaffOrTrainer = user?.utype !== 'learner' && user?.utype !== 'student';
 
   if (selectedLesson) {
+    const moduleLessons = lessons.filter(l => l.module_id === selectedLesson.module_id)
+                                .sort((a, b) => a.serial_number - b.serial_number);
+
     return (
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-16">
         <div className="flex items-center justify-between">
@@ -220,10 +222,11 @@ const Lessons: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col xl:flex-row gap-8">
-          <div className="flex-1 space-y-8">
+        <div className="flex flex-col xl:flex-row gap-8 items-start">
+          {/* Main Video & Content */}
+          <div className="flex-1 w-full space-y-8">
             <div className="bg-white rounded-[32px] overflow-hidden shadow-premium border border-slate-100">
-               <div className="aspect-video bg-slate-900 relative group overflow-hidden">
+               <div className="aspect-video bg-slate-900 relative group overflow-hidden shadow-2xl">
                   {selectedLesson.video_url ? (
                     <iframe className="w-full h-full" src={getEmbedUrl(selectedLesson.video_url)} title="Instructional Media" allowFullScreen />
                   ) : (
@@ -243,22 +246,71 @@ const Lessons: React.FC = () => {
                </div>
             </div>
 
-
+            {/* Additional details could go here if needed */}
           </div>
 
-          <div className="w-full xl:w-96 space-y-8">
-             <div className="bg-white rounded-[32px] p-8 shadow-premium border border-slate-100 flex flex-col gap-6">
-                <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center justify-between">Lead Architect <User className="w-4 h-4 text-indigo-600" /></h3>
-                <div className="flex items-center gap-4">
-                   <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 font-bold text-xl shadow-inner">{(selectedLesson.created_by_teacher_name?.[0] || 'S').toUpperCase()}</div>
-                   <div>
-                      <div className="text-sm font-bold text-slate-900 tracking-tight">{selectedLesson.created_by_teacher_name || 'System Staff'}</div>
-                      <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-bold uppercase tracking-widest border border-emerald-100">Verified Expert</div>
-                   </div>
+          {/* Chapter Sidebar */}
+          <div className="w-full xl:w-[400px] flex flex-col gap-8 sticky top-24">
+             <div className="bg-white rounded-[32px] p-8 shadow-premium border border-slate-100 flex flex-col gap-6 max-h-[70vh]">
+                <div className="flex items-center justify-between">
+                   <h3 className="text-[10px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                     <BookText className="w-4 h-4 text-indigo-600" />
+                     Corpus Content
+                   </h3>
+                   <span className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded-md text-[9px] font-bold text-slate-500 uppercase tracking-widest">{moduleLessons.length} Modules</span>
+                </div>
+
+                <div className="flex-1 overflow-y-auto no-scrollbar space-y-3 pr-2">
+                   {moduleLessons.map((lesson) => {
+                     const isActive = lesson.id === selectedLesson.id;
+                     return (
+                        <div 
+                           key={lesson.id}
+                           onClick={() => fetchLessonDetail(lesson.id)}
+                           className={`p-4 rounded-2xl border transition-all duration-300 cursor-pointer group flex items-start gap-4 ${
+                             isActive 
+                             ? 'bg-indigo-50 border-indigo-200 shadow-sm ring-1 ring-indigo-200' 
+                             : 'bg-white border-slate-100 hover:border-indigo-100 hover:bg-slate-50'
+                           }`}
+                        >
+                           <div className={`mt-1 w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center text-[10px] font-bold transition-colors ${
+                              isActive ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-200' : 'bg-slate-50 text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-600'
+                           }`}>
+                              {lesson.serial_number}
+                           </div>
+                           <div className="flex-1 min-w-0">
+                              <div className={`text-xs font-bold tracking-tight leading-snug transition-colors ${
+                                 isActive ? 'text-indigo-900' : 'text-slate-700 group-hover:text-indigo-600'
+                              }`}>
+                                 {lesson.sub_topic}
+                              </div>
+                              <div className="flex items-center gap-3 mt-1.5">
+                                 <div className="flex items-center gap-1 text-[9px] font-medium text-slate-400">
+                                    <Clock className="w-2.5 h-2.5" />
+                                    {lesson.total_hours}m
+                                 </div>
+                                 {lesson.video_url && (
+                                    <div className="w-4 h-4 rounded bg-red-50 flex items-center justify-center text-red-500">
+                                       <Video className="w-2.5 h-2.5" />
+                                    </div>
+                                 )}
+                              </div>
+                           </div>
+                           {isActive && <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 px-0.5"></div>}
+                        </div>
+                     );
+                   })}
                 </div>
              </div>
-             
 
+             {/* Lead Architect section moved below if still desired, or removed for more space */}
+             <div className="bg-slate-50/50 rounded-[32px] p-6 border border-slate-100 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg shadow-sm">{(selectedLesson.created_by_teacher_name?.[0] || 'S').toUpperCase()}</div>
+                <div>
+                   <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Lead Architect</div>
+                   <div className="text-xs font-bold text-slate-900 tracking-tight mt-0.5">{selectedLesson.created_by_teacher_name || 'System Staff'}</div>
+                </div>
+             </div>
           </div>
         </div>
       </div>
@@ -321,7 +373,7 @@ const Lessons: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                      <Clock className="w-3.5 h-3.5 text-slate-700" />
-                     <span className="text-[10px] font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">{lesson.total_hours}m</span>
+                     <span className="text-[10px] font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">{(lesson.total_hours && lesson.total_hours > 0) ? `${lesson.total_hours}m` : 'Duration TBD'}</span>
                   </div>
                </div>
 

@@ -10,6 +10,7 @@ export interface User {
   utype: UserRole; // Mapped role for logic (e.g., "trainer")
   phone?: string;
   is_active: boolean;
+  profile_picture_url?: string;
 }
 
 export interface AuthResponse {

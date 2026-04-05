@@ -5,7 +5,10 @@ import {
   Users,
   BookText,
   X,
-  ShieldCheck
+  ShieldCheck,
+  Terminal,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 import type { UserRole } from '../types/index';
@@ -14,6 +17,8 @@ interface SidebarProps {
   role: UserRole;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 type NavItem = {
@@ -22,7 +27,7 @@ type NavItem = {
   label: string;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen, isCollapsed, onToggleCollapse }) => {
   const closeOnMobile = () => {
     if (window.innerWidth < 1024) setIsOpen(false);
   };
@@ -32,17 +37,20 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => {
     { to: '/users', icon: Users, label: 'Learners' },
     { to: '/staff/lessons/', icon: BookText, label: 'Resources' },
     { to: '/create-staff', icon: ShieldCheck, label: 'Trainers' },
+    { to: '/playground', icon: Terminal, label: 'Playground' },
   ];
 
   const trainerLinks: NavItem[] = [
     { to: '/trainer/dashboard', icon: LayoutDashboard, label: 'Overview' },
     { to: '/trainer/learner-list', icon: Users, label: 'Learners' },
     { to: '/staff/lessons/', icon: BookText, label: 'Materials' },
+    { to: '/playground', icon: Terminal, label: 'Playground' },
   ];
 
   const learnerLinks: NavItem[] = [
     { to: '/learner/dashboard', icon: LayoutDashboard, label: 'Overview' },
     { to: '/staff/lessons/', icon: BookText, label: 'Lessons' },
+    { to: '/playground', icon: Terminal, label: 'Playground' },
   ];
 
   let links: NavItem[] = learnerLinks;
@@ -73,21 +81,23 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => {
         role="navigation"
         aria-label="Main navigation"
         className={`
-          w-[var(--sidebar-width)] bg-[var(--bg-sidebar)] border-r border-[var(--border-base)] h-screen fixed top-0 flex flex-col z-50
-          transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
+          ${isCollapsed ? 'w-20' : 'w-[var(--sidebar-width)]'} bg-[var(--bg-sidebar)] border-r border-[var(--border-base)] h-screen fixed top-0 flex flex-col z-50
+          transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
           ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
         `}
       >
         {/* Sidebar Header */}
         <div className="h-[var(--header-height)] px-6 flex items-center justify-between border-b border-[var(--border-base)] flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
-              <img src="/logo.png" alt="Nubeera Logo" className="w-full h-full object-contain drop-shadow-md" />
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="NubeEra Logo" className="w-full h-full object-contain drop-shadow-md" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-[var(--text-main)] tracking-tight text-base leading-none">Nubeera</span>
-              <span className="text-[10px] text-indigo-600 font-semibold tracking-wider mt-1.5 uppercase opacity-80">Technologies</span>
-            </div>
+            {!isCollapsed && (
+              <div className="flex flex-col animate-in fade-in duration-500">
+                <span className="font-bold text-[var(--text-main)] tracking-tight text-base leading-none">NubeEra</span>
+                <span className="text-[10px] text-indigo-600 font-semibold tracking-wider mt-1.5 uppercase opacity-80">Technologies</span>
+              </div>
+            )}
           </div>
 
           <button
@@ -118,20 +128,30 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen, setIsOpen }) => {
                   closeOnMobile();
                 }}
                 className={({ isActive }) =>
-                  `ag-nav-item ${isActive ? 'active' : ''}`
+                  `ag-nav-item ${isActive ? 'active' : ''} ${isCollapsed ? 'justify-center px-0' : ''}`
                 }
               >
                 <Icon
-                  className="w-4.5 h-4.5"
+                  className={`${isCollapsed ? 'w-6 h-6' : 'w-4.5 h-4.5'}`}
                   aria-hidden="true"
                 />
-                <span className="tracking-tight">{link.label}</span>
+                {!isCollapsed && <span className="tracking-tight animate-in fade-in slide-in-from-left-2 duration-300">{link.label}</span>}
               </NavLink>
             );
           })}
         </nav>
 
 
+        {/* Toggle Button */}
+        <div className={`p-4 border-t border-[var(--border-base)] flex ${isCollapsed ? 'justify-center' : 'justify-end'}`}>
+           <button 
+             onClick={onToggleCollapse}
+             className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-100 transition-all shadow-sm"
+             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+           >
+              {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+           </button>
+        </div>
       </aside>
     </>
   );

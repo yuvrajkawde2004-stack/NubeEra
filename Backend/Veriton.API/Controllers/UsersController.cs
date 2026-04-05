@@ -57,6 +57,7 @@ public class UsersController : ControllerBase
             role = user.Role,
             utype = user.Role.ToLower(),
             phone = user.Phone,
+            profile_picture_url = user.ProfilePictureUrl,
             is_active = user.IsActive,
             
             learner_details = learner != null ? new {
@@ -85,6 +86,7 @@ public class UsersController : ControllerBase
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
         user.Phone = request.Phone;
+        user.ProfilePictureUrl = request.ProfilePictureUrl;
 
         await _userRepository.UpdateAsync(user);
 
@@ -289,6 +291,7 @@ public class UpdateProfileRequest
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Phone { get; set; }
+    public string? ProfilePictureUrl { get; set; }
     public string? Gender { get; set; }
     public string? Qualification { get; set; }
 }

@@ -168,4 +168,35 @@ public class LessonService : ILessonService
 
         return completions.Select(c => c.LessonId).ToList();
     }
+
+    public async Task<List<LessonDto>> GetRecentAsync(int count)
+    {
+        var lessons = await _repository.GetAllAsync(q => q
+            .Include(l => l.Module)
+            .Include(l => l.CreatedByTrainer)
+            .OrderByDescending(l => l.CreatedAt)
+            .Take(count));
+
+        return lessons.Select(l => new LessonDto
+        {
+            Id = l.Id,
+            ModuleId = l.ModuleId,
+            ModuleName = l.Module?.Name ?? "",
+            SubTopic = l.SubTopic,
+            Activity = l.Activity,
+            VideoUrl = l.VideoUrl,
+            DiagramUrl = l.DiagramUrl,
+            Code = l.Code,
+            Procedure = l.Procedure,
+            RequiredMaterial = l.RequiredMaterial,
+            WhatYouGet = l.WhatYouGet,
+            CreatedByTrainerId = l.CreatedByTrainerId,
+            CreatedByTrainerName = l.CreatedByTrainer != null
+                ? $"{l.CreatedByTrainer.FirstName} {l.CreatedByTrainer.LastName}" : "",
+            SerialNumber = l.SerialNumber,
+            TotalHours = l.TotalHours,
+            IsActive = l.IsActive,
+            CreatedAt = l.CreatedAt
+        }).ToList();
+    }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Edit3, Save, Shield, Phone, X, Mail, Calendar, User as UserIcon } from 'lucide-react';
+import { Edit3, Save, Shield, Phone, X, Mail, Calendar, Camera, User as UserIcon } from 'lucide-react';
 import api from '../services/api';
 import { toast } from 'sonner';
 
@@ -15,7 +15,8 @@ const UpdateProfile: React.FC = () => {
     gender: '',
     address: '',
     qualification: '',
-    specialization: ''
+    specialization: '',
+    profile_picture_url: ''
   });
 
   useEffect(() => {
@@ -35,7 +36,8 @@ const UpdateProfile: React.FC = () => {
         gender: details.gender || '',
         address: details.address || '',
         qualification: details.qualification || '',
-        specialization: details.specialization || ''
+        specialization: details.specialization || '',
+        profile_picture_url: data.profile_picture_url || ''
       };
       
       setFormData(newFormData);
@@ -63,6 +65,42 @@ const UpdateProfile: React.FC = () => {
     }
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    const toastId = toast.loading('Uploading profile image...');
+    try {
+      const { data } = await api.post('/upload', formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      const newPicUrl = data.url;
+      setFormData(prev => ({ ...prev, profile_picture_url: newPicUrl }));
+      
+      // Auto-save to backend immediately so refresh doesn't lose it
+      await api.put('/users/profile', { 
+        ...formData, 
+        profile_picture_url: newPicUrl 
+      });
+      
+      // Update local storage user object so Header reflects it immediately
+      const updatedUser = { ...user, profile_picture_url: newPicUrl };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      
+      // Trigger a storage event so other components (like Header) can react if they listen
+      window.dispatchEvent(new Event('storage'));
+      
+      toast.success('Image uploaded and saved!', { id: toastId });
+    } catch (error) {
+      toast.error('Image upload or sync failed', { id: toastId });
+    }
+  };
+
   const roleDisplay = (user.utype || 'User').toUpperCase();
 
   return (
@@ -74,12 +112,20 @@ const UpdateProfile: React.FC = () => {
            <div className="bg-white rounded-[40px] p-10 flex flex-col items-center text-center shadow-premium border border-slate-100 relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-indigo-500/5 to-transparent"></div>
               
-              <div className="w-40 h-40 rounded-[48px] bg-slate-50 border border-slate-100 p-2 mb-8 shadow-xl relative z-10 group-hover:scale-105 transition-transform duration-700">
+              <div className="w-40 h-40 rounded-[48px] bg-slate-50 border border-slate-100 p-2 mb-8 shadow-xl relative z-10 group-hover:scale-105 transition-transform duration-700 overflow-hidden">
                 <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || 'Antigravity'}`}
+                  src={formData.profile_picture_url || user.profile_picture_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || 'Antigravity'}`}
                   alt="Identity"
                   className="w-full h-full rounded-[40px] object-cover bg-white"
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || 'Antigravity'}`; }}
                 />
+                {isEditing && (
+                  <label className="absolute inset-x-2 bottom-2 bg-black/60 backdrop-blur-md text-white py-2 flex items-center justify-center gap-2 cursor-pointer hover:bg-black/80 transition-all rounded-b-[40px] animate-in slide-in-from-bottom duration-300">
+                    <Camera className="w-4 h-4" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Update</span>
+                    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                  </label>
+                )}
               </div>
 
               <div className="relative z-10">

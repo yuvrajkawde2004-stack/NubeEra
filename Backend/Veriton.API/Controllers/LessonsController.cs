@@ -64,4 +64,8 @@ public class LessonsController : ControllerBase
     [Authorize(Policy = "LearnerOnly")]
     public async Task<IActionResult> GetCompleted()
         => Ok(await _service.GetCompletedLessonIdsAsync());
+
+    [HttpGet("recent")]
+    public async Task<IActionResult> GetRecent([FromQuery] int count = 5)
+        => Ok(await _service.GetRecentAsync(count));
 }

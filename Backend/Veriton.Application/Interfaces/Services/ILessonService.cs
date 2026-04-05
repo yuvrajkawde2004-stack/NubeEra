@@ -7,4 +7,5 @@ public interface ILessonService : IGenericService<LessonCreateDto, LessonUpdateD
 {
     Task MarkAsCompletedAsync(Guid lessonId);
     Task<List<Guid>> GetCompletedLessonIdsAsync();
+    Task<List<LessonDto>> GetRecentAsync(int count);
 }

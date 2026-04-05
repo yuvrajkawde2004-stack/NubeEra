@@ -18,6 +18,7 @@ import Learners from './pages/Learners';
 import AddLearner from './pages/AddLearner';
 import Settings from './pages/Settings';
 import UploadVideo from './pages/UploadVideo';
+import Playground from './pages/Playground';
 import type { User } from './types/index';
 
 const App: React.FC = () => {
@@ -42,10 +43,17 @@ const App: React.FC = () => {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
         }
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
       }
       setLoading(false);
     };
     checkAuth();
+
+    // Sync state if localStorage changes (e.g., from other components/tabs)
+    window.addEventListener('storage', checkAuth);
+    return () => window.removeEventListener('storage', checkAuth);
   }, []);
 
   useEffect(() => {
@@ -57,6 +65,15 @@ const App: React.FC = () => {
   }, [user]);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('sidebarCollapsed') === 'true';
+  });
+
+  const toggleSidebarCollapse = () => {
+    const newState = !isSidebarCollapsed;
+    setIsSidebarCollapsed(newState);
+    localStorage.setItem('sidebarCollapsed', newState.toString());
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -101,9 +118,15 @@ const App: React.FC = () => {
           element={
             isAuthenticated ? (
               <div className="min-h-screen bg-[var(--bg-page)] overflow-x-hidden">
-                <Sidebar role={user?.utype || 'learner'} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-                <div className="min-h-screen lg:pl-[var(--sidebar-width)] flex flex-col">
-                  <Header user={user} onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
+                <Sidebar 
+                  role={user?.utype || 'learner'} 
+                  isOpen={sidebarOpen} 
+                  setIsOpen={setSidebarOpen} 
+                  isCollapsed={isSidebarCollapsed}
+                  onToggleCollapse={toggleSidebarCollapse}
+                />
+                <div className={`min-h-screen ${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[var(--sidebar-width)]'} transition-[padding] duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col`}>
+                  <Header user={user} onMenuToggle={() => setSidebarOpen(!sidebarOpen)} isCollapsed={isSidebarCollapsed} />
                   <main className="p-6 flex-1 mt-[72px] min-w-0">
                     <Routes>
                       {/* Dashboard Routes */}
@@ -127,6 +150,7 @@ const App: React.FC = () => {
                       <Route path="/add-learner" element={<AddLearner />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/upload-video" element={<UploadVideo />} />
+                      <Route path="/playground" element={<Playground />} />
 
                       {/* Fallback */}
                       <Route path="*" element={<Navigate to={getDefaultPath()} />} />

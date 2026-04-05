@@ -10,6 +10,7 @@ public class User : BaseEntity
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Phone { get; set; }
+    public string? ProfilePictureUrl { get; set; }
     public bool IsActive { get; private set; } = true;
     public DateTime? LastLoginAt { get; set; }
 
