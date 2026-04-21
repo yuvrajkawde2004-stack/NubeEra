@@ -33,8 +33,12 @@ public class LearnerService : IGenericService<LearnerCreateDto, LearnerUpdateDto
     public async Task<List<LearnerDto>> GetAllAsync()
     {
         var learners = await _repository.GetAllAsync();
-        var completions = await _completionRepository.GetAllAsync();
-        var lessonsCount = (await _lessonRepository.GetAllAsync()).Count;
+        var lessonsCount = await _lessonRepository.CountAsync();
+        
+        // Fetch completions efficiently if needed
+        var completions = learners.Any() 
+            ? await _completionRepository.GetAllAsync() 
+            : new List<LessonCompletion>();
 
         return learners.Select(s => {
             var completedCount = completions.Count(c => c.LearnerId == s.Id);

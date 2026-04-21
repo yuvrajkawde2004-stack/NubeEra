@@ -12,7 +12,7 @@ public class LessonCreateDto
     public string? RequiredMaterial { get; set; }
     public string? WhatYouGet { get; set; }
     public int SerialNumber { get; set; }
-    public int TotalHours { get; set; }
+    public double TotalHours { get; set; }
     public Guid? CreatedByTrainerId { get; set; } 
 }
 
@@ -28,7 +28,7 @@ public class LessonUpdateDto
     public string? RequiredMaterial { get; set; }
     public string? WhatYouGet { get; set; }
     public int SerialNumber { get; set; }
-    public int TotalHours { get; set; }
+    public double TotalHours { get; set; }
     public Guid? CreatedByTrainerId { get; set; } 
     public bool IsActive { get; set; }
 }
@@ -47,7 +47,7 @@ public class LessonDto
     public string? RequiredMaterial { get; set; }
     public string? WhatYouGet { get; set; }
     public int SerialNumber { get; set; }
-    public int TotalHours { get; set; }
+    public double TotalHours { get; set; }
     public Guid? CreatedByTrainerId { get; set; }
     public string CreatedByTrainerName { get; set; } = "";
     public bool IsActive { get; set; }

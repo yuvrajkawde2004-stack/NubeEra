@@ -55,11 +55,11 @@ const UpdateProfile: React.FC = () => {
     setLoading(true);
     try {
       await api.put('/users/profile', formData);
-      toast.success('Identity profile updated');
+      toast.success('Profile updated');
       setIsEditing(false);
       fetchProfile();
     } catch (error: any) {
-      toast.error('Identity sync failed');
+      toast.error('Update failed');
     } finally {
       setLoading(false);
     }
@@ -141,8 +141,8 @@ const UpdateProfile: React.FC = () => {
                        <Shield className="w-5 h-5" />
                     </div>
                     <div>
-                       <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Access Role</p>
-                       <p className="text-xs font-bold text-slate-700 mt-0.5">{user.role || 'Authorized User'}</p>
+                        <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Role</p>
+                        <p className="text-xs font-bold text-slate-700 mt-0.5">{user.role || 'User'}</p>
                     </div>
                  </div>
                  <div className="flex items-center gap-4 text-left">
@@ -150,7 +150,7 @@ const UpdateProfile: React.FC = () => {
                        <Mail className="w-5 h-5" />
                     </div>
                     <div className="min-w-0">
-                       <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Mail Protocol</p>
+                        <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Email</p>
                        <p className="text-xs font-bold text-slate-700 truncate mt-0.5">{user.email}</p>
                     </div>
                  </div>
@@ -165,19 +165,19 @@ const UpdateProfile: React.FC = () => {
            <div className="bg-white rounded-[40px] shadow-premium border border-slate-100 overflow-hidden">
               <div className="p-10 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Identity Configuration</h3>
-                    <p className="text-sm text-slate-500 font-medium mt-1">Refine your personal and professional identity nodes.</p>
+                     <h3 className="text-xl font-bold text-slate-900 tracking-tight">Profile Settings</h3>
+                     <p className="text-sm text-slate-500 font-medium mt-1">Update your personal and account information.</p>
                  </div>
                  {!isEditing ? (
-                   <button type="button" onClick={() => setIsEditing(true)} className="ag-btn ag-btn-outline !rounded-2xl px-6 py-3 shadow-sm hover:shadow-md transition-all">
-                      <Edit3 className="w-4 h-4" /> <span>Edit Identity</span>
-                   </button>
+                    <button type="button" onClick={() => setIsEditing(true)} className="ag-btn ag-btn-outline !rounded-2xl px-6 py-3 shadow-sm hover:shadow-md transition-all">
+                       <Edit3 className="w-4 h-4" /> <span>Edit Profile</span>
+                    </button>
                  ) : (
                    <div className="flex gap-4">
                       <button type="button" onClick={() => setIsEditing(false)} className="w-11 h-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-600 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-100 transition-all shadow-sm"><X className="w-5 h-5" /></button>
                       <button type="submit" onClick={handleUpdateProfile} disabled={loading} className="ag-btn ag-btn-primary !rounded-2xl px-6 py-3 shadow-lg">
                          {loading ? <div className="w-5 h-5 border-2 border-slate-900/30 border-t-white rounded-full animate-spin" /> : <Save className="w-5 h-5" />}
-                         <span>Commit Changes</span>
+                          <span>Save Changes</span>
                       </button>
                    </div>
                  )}

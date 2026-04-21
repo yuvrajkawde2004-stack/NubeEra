@@ -18,7 +18,7 @@ public class Lesson : BaseEntity
     public string? WhatYouGet { get; set; }
     public Guid? CreatedByTrainerId { get; set; }
     public int SerialNumber { get; set; }
-    public int TotalHours { get; set; } 
+    public double TotalHours { get; set; } 
     public bool IsActive { get; set; } = true;
 
     // Navigation Properties

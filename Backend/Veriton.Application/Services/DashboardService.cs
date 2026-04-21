@@ -39,6 +39,8 @@ public class DashboardService : IDashboardService
             
             TotalTrainersPending = await _trainerRepo.CountAsync(q => q.Where(t => !t.IsActive)),
             TotalLearnersPending = await _learnerRepo.CountAsync(q => q.Where(s => !s.IsActive)),
+            TotalActiveLearners = await _learnerRepo.CountAsync(q => q.Where(s => s.IsActive)),
+            TotalLessonCompletions = await _completionRepo.CountAsync(),
 
             // Populate Chart Data
             LearnerProgress = await GetLearnerProgressStatsAsync(),

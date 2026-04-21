@@ -26,6 +26,8 @@ export interface DashboardStats {
   total_learners_pending: number;
   total_modules: number;
   total_lessons: number;
+  total_active_learners: number;
+  total_lesson_completions: number;
   learner_progress: { name: string; progress: number }[];
 }
 

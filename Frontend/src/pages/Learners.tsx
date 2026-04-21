@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Edit, Trash2, X, Zap, User as UserIcon, Mail, Phone, Lock } from 'lucide-react';
+import { Search, Edit, Trash2, X, Zap, User as UserIcon, Mail, Phone, Lock, RefreshCw, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
@@ -43,9 +43,14 @@ const Learners: React.FC = () => {
     try {
       const { data } = await api.get('/learners');
       setLearners(data);
-    } catch (error) {
-      console.error('Learners loading failure', error);
-      toast.error('Failed to synchronize learner registry');
+    } catch (error: any) {
+      console.error('Critical registry synchronization failure:', error);
+      const status = error?.response?.status;
+      if (status === 500) {
+        toast.error('Internal System Error: The registry logic encountered a conflict. Our engineers have been alerted.');
+      } else {
+        toast.error('Failed to synchronize learner registry. Connection unstable.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -124,14 +129,50 @@ const Learners: React.FC = () => {
   const totalPages = Math.ceil(filteredLearners.length / pageSize);
   const paginatedLearners = filteredLearners.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  useEffect(() => { setCurrentPage(1); }, [searchTerm]);
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, pageSize]);
 
   useEscapeKey(() => setShowModal(false), showModal);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700 pb-12">
       
-      {/* Search & Action Bar */}
+      {/* Statistical Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-slate-100">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+             <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                <Users className="w-6 h-6" />
+             </div>
+             <h1 className="text-3xl font-black text-slate-900 tracking-tight">Active Learners</h1>
+          </div>
+          <p className="text-slate-500 font-medium pl-15">
+            Monitoring <span className="text-indigo-600 font-bold">{learners.filter(l => l.is_active).length} active</span> nodes across the enterprise registry.
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => { setIsLoading(true); fetchData(); }} 
+            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 hover:text-indigo-600 transition-all shadow-sm active:scale-95"
+            disabled={isLoading}
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-indigo-500' : ''}`} />
+            <span>Refresh Registry</span>
+          </button>
+          
+          {isStaffOrTrainer && (
+            <button 
+              onClick={() => { resetForm(); setShowModal(true); }} 
+              className="ag-btn ag-btn-primary !rounded-xl !px-6 shadow-xl shadow-indigo-100"
+            >
+              <Zap className="w-4 h-4" />
+              <span>Enroll New Intelligence</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Search Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="relative w-full sm:w-96 group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 w-4 h-4 group-focus-within:text-indigo-500 transition-colors" />
@@ -143,15 +184,6 @@ const Learners: React.FC = () => {
             className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm text-slate-900 focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/5 transition-all shadow-sm placeholder:text-slate-600"
           />
         </div>
-        {isStaffOrTrainer && (
-          <button 
-            onClick={() => { resetForm(); setShowModal(true); }} 
-            className="ag-btn ag-btn-primary !rounded-full px-6 shadow-md"
-          >
-            <Zap className="w-4 h-4" />
-            <span>Enroll New Learner</span>
-          </button>
-        )}
       </div>
 
       {/* Learners Table container */}

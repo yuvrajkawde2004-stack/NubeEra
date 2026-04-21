@@ -19,12 +19,12 @@ const ChangePassword: React.FC = () => {
     e.preventDefault();
 
     if (formData.new_password !== formData.confirm_password) {
-      toast.error('Identity mismatch: Passwords do not align.');
+      toast.error('Passwords do not match.');
       return;
     }
 
     if (formData.new_password.length < 6) {
-      toast.error('Security violation: Password protocol too brief (min 6 chars).');
+      toast.error('Password too short (min 6 characters).');
       return;
     }
 
@@ -34,14 +34,14 @@ const ChangePassword: React.FC = () => {
         current_password: formData.current_password,
         new_password: formData.new_password
       });
-      toast.success('Encryption credentials updated');
+      toast.success('Password updated successfully');
       setFormData({
         current_password: '',
         new_password: '',
         confirm_password: ''
       });
     } catch (error: any) {
-      toast.error('Identity sync failure: ' + (error.response?.data?.message || 'Access denied'));
+      toast.error('Update failed: ' + (error.response?.data?.message || 'Access denied'));
     } finally {
       setLoading(false);
     }
@@ -59,8 +59,8 @@ const ChangePassword: React.FC = () => {
                  <Lock className="w-7 h-7" />
               </div>
               <div>
-                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Credential Update</h2>
-                 <p className="text-sm text-slate-500 font-medium">Refine your login encryption protocols.</p>
+                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Change Password</h2>
+                 <p className="text-sm text-slate-500 font-medium">Update your account security credentials.</p>
               </div>
            </div>
         </div>
@@ -68,7 +68,7 @@ const ChangePassword: React.FC = () => {
         <form onSubmit={handleSubmit} className="p-12 space-y-10 relative z-10">
            {/* Current Password Node */}
            <div className="space-y-4">
-              <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1 block">Current Identity Protocol</label>
+              <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1 block">Current Password</label>
               <div className="relative group">
                  <Lock className="w-4 h-4 absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-indigo-500 transition-colors" />
                  <input
@@ -77,7 +77,7 @@ const ChangePassword: React.FC = () => {
                    value={formData.current_password}
                    onChange={e => setFormData({ ...formData, current_password: e.target.value })}
                    className="w-full pl-14 pr-14 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all font-bold text-sm shadow-inner"
-                   placeholder="Mobilize current password"
+                   placeholder="Enter current password"
                  />
                  <button
                    type="button"
@@ -92,7 +92,7 @@ const ChangePassword: React.FC = () => {
            {/* New Credentials Surface */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-4">
-                 <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1 block">Establish New Protocol</label>
+                 <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1 block">New Password</label>
                  <div className="relative group">
                     <Key className="w-4 h-4 absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-emerald-500 transition-colors" />
                     <input
@@ -101,7 +101,7 @@ const ChangePassword: React.FC = () => {
                       value={formData.new_password}
                       onChange={e => setFormData({ ...formData, new_password: e.target.value })}
                       className="w-full pl-14 pr-14 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all font-bold text-sm shadow-inner"
-                      placeholder="New password node"
+                      placeholder="Enter new password"
                     />
                     <button
                       type="button"
@@ -114,7 +114,7 @@ const ChangePassword: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                 <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1 block">Confirm Global Update</label>
+                 <label className="text-[10px] font-bold text-slate-600 uppercase tracking-widest ml-1 block">Confirm New Password</label>
                  <div className="relative group">
                     <Shield className="w-4 h-4 absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-indigo-500 transition-colors" />
                     <input
@@ -123,7 +123,7 @@ const ChangePassword: React.FC = () => {
                       value={formData.confirm_password}
                       onChange={e => setFormData({ ...formData, confirm_password: e.target.value })}
                       className="w-full pl-14 pr-14 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all font-bold text-sm shadow-inner"
-                      placeholder="Align new protocol"
+                      placeholder="Confirm new password"
                     />
                     <button
                       type="button"
@@ -148,7 +148,7 @@ const ChangePassword: React.FC = () => {
                 ) : (
                    <>
                      <Save className="w-5 h-5" />
-                     <span>Push Credential Commit</span>
+                     <span>Update Password</span>
                    </>
                 )}
               </button>

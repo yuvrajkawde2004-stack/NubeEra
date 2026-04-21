@@ -11,6 +11,8 @@ public class DashboardStatsDto
     // Pending counts
     public int TotalTrainersPending { get; set; }
     public int TotalLearnersPending { get; set; }
+    public int TotalActiveLearners { get; set; }
+    public int TotalLessonCompletions { get; set; }
 
     // Chart Data
     public List<LearnerProgressStatDto> LearnerProgress { get; set; } = new();

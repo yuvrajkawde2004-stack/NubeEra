@@ -24,13 +24,10 @@ services:
       context: ./Backend
       dockerfile: Veriton.API/Dockerfile
     container_name: lxp-api
-    depends_on:
-      lxp-mysql:
-        condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://0.0.0.0:5000
-      ConnectionStrings__MySql: Server=lxp-mysql;Port=3306;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};SslMode=None;AllowPublicKeyRetrieval=True
+      ConnectionStrings__MySql: Server=shared-mysql;Port=3306;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};SslMode=None;AllowPublicKeyRetrieval=True
       Jwt__Key: ${JWT_KEY}
       Jwt__Issuer: ${JWT_ISSUER}
       Jwt__Audience: ${JWT_AUDIENCE}
@@ -47,6 +44,7 @@ services:
     restart: unless-stopped
     networks:
       - lxp-network
+      - common-db-net
 
   lxp-frontend:
     build:
@@ -69,3 +67,5 @@ volumes:
 networks:
   lxp-network:
     driver: bridge
+  common-db-net:
+    external: true
