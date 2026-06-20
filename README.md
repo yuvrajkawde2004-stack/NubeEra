@@ -51,14 +51,11 @@ lxp-numeera.com/
 
 The system maps backend roles to frontend user types (`utype`) to control UI visibility and API route access.
 
-| Backend Role | Frontend `utype` | Allowed Dashboards & Actions |
+| Backend Role | Frontend `utype` | Description & Allowed Actions |
 | :--- | :--- | :--- |
-| `SuperAdmin` | `admin` | Global network control, full administrative access. |
-| `Admin` | `admin` | School-wide configuration, database controls, auditing. |
-| `Staff` | `staff` | Grade & Division management, User provisioning. |
-| `Principal` | `principal` | School-specific analytics, Teacher management. |
-| `Teacher` | `teacher` | Exam creation, Attendance tracking, Scheduler management. |
-| `Student` | `student` | Course catalog, Accordion lesson views, Progress trackers. |
+| `Staff` | `staff` | **Platform Management:** Curriculum oversight (tracks, modules, lessons), user provisioning (managing staff, trainers, and learners), and general administration. |
+| `Trainer` | `trainer` | **Content & Instruction:** Managing curriculum tracks, modules, lessons, and tracking learners' progress. |
+| `Learner` | `learner` | **Learning Hub:** Consuming course tracks, reading/completing lessons, and personal progress tracking. |
 
 ---
 
