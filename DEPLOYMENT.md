@@ -1,4 +1,4 @@
-# Production Deployment Guide (LMS)
+# Production Deployment Guide (LXP)
 
 This guide explains how to deploy the LMS project on a production server using Docker.
 
@@ -14,47 +14,68 @@ YOUR_SERVER_IP
 
 After deployment:
 
-* Frontend: `http://YOUR_SERVER_IP:5173`
-* Backend: `http://YOUR_SERVER_IP:5000`
+* Frontend: `http://YOUR_SERVER_IP:5174`
+* Backend: `http://YOUR_SERVER_IP:5001`
 
 ---
 
-## 1. Install Docker & Docker Compose
+# 1. Install Docker & Docker Compose
 
-Run the following commands on your server:
+Run the following commands on your server.
+
+### Update package index
 
 ```bash
 sudo apt update
-
-# Install Docker
-sudo apt install -y docker.io
-
-# Start and enable Docker
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Add current user to docker group
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Install Docker Compose plugin
-sudo apt install -y docker-compose-plugin
 ```
 
-Verify installation:
+### Install Docker and Docker Compose
+
+```bash
+sudo apt install docker.io docker-compose-v2 -y
+```
+
+### Start and enable Docker service
+
+```bash
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+### Add current user to the Docker group
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+### Apply group changes without logging out
+
+```bash
+newgrp docker
+```
+
+## Verify Installation
 
 ```bash
 docker --version
 docker compose version
 ```
 
+Expected output:
+
+```text
+Docker version 28.x.x, build xxxxxxx
+Docker Compose version v2.x.x
+```
+
+> Note: If Docker commands still require `sudo`, log out and log back in, then try again.
 ---
 
 ## 2. Clone the Project
 
 ```bash
 git clone YOUR_GITHUB_REPO_URL
-cd LMS
+cd LXP
 ```
 
 ---
@@ -94,13 +115,13 @@ docker compose up -d --build
 Frontend:
 
 ```bash
-http://YOUR_SERVER_IP:5173
+http://YOUR_SERVER_IP:5174
 ```
 
 Backend:
 
 ```bash
-http://YOUR_SERVER_IP:5000/swagger
+http://YOUR_SERVER_IP:5001/swagger
 ```
 
 ---
@@ -149,11 +170,11 @@ docker compose ps
 Frontend:
 
 ```bash
-http://YOUR_SERVER_IP:5173
+http://YOUR_SERVER_IP:5174
 ```
 
 Backend:
 
 ```bash
-http://YOUR_SERVER_IP:5000/swagger
+http://YOUR_SERVER_IP:5001/swagger
 ```
