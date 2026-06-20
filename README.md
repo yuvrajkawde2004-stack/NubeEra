@@ -37,9 +37,9 @@ lxp-numeera.com/
 │   ├── Veriton.Domain/      # Domain Models & Core System Entities
 │   └── Veriton.Infrastructure/ # Database Context, JWT Auth, and Providers
 ├── Frontend/                # React App Source Code
-│   ├── src/                 # Modules (academics, dashboard, eventsHub, etc.)
+│   ├── src/                 # Pages, components, hooks, and services
 │   ├── index.html           # SPA entry point
-│   ├── tailwind.config.js   # Style configurations (Tailwind CSS v4)
+│   ├── vite.config.ts       # Vite configuration with Tailwind CSS v4
 │   └── Dockerfile           # Multi-stage production build (Node -> Nginx)
 ├── docker-compose.yml       # Production Orchestration file
 └── RBAC_Audit.md            # Role-Based Access Control Audit & Policies
@@ -56,6 +56,17 @@ The system maps backend roles to frontend user types (`utype`) to control UI vis
 | `Staff` | `staff` | **Platform Management:** Curriculum oversight (tracks, modules, lessons), user provisioning (managing staff, trainers, and learners), and general administration. |
 | `Trainer` | `trainer` | **Content & Instruction:** Managing curriculum tracks, modules, lessons, and tracking learners' progress. |
 | `Learner` | `learner` | **Learning Hub:** Consuming course tracks, reading/completing lessons, and personal progress tracking. |
+
+### 🔑 Default Seeded Credentials
+
+When the database is initialized, the following users are automatically seeded for testing:
+
+| Email | Password | Role | Mapped User Type (`utype`) |
+| :--- | :--- | :--- | :--- |
+| `s@gmail.com` | `stl@123` | `Staff` | `staff` |
+| `staff1@gmail.com` | `stl@123` | `Staff` | `staff` |
+| `t@gmail.com` | `stl@123` | `Trainer` | `trainer` |
+| `l@gmail.com` | `stl@123` | `Learner` | `learner` |
 
 ---
 
