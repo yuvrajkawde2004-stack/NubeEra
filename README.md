@@ -57,16 +57,20 @@ The system maps backend roles to frontend user types (`utype`) to control UI vis
 | `Trainer` | `trainer` | **Content & Instruction:** Managing curriculum tracks, modules, lessons, and tracking learners' progress. |
 | `Learner` | `learner` | **Learning Hub:** Consuming course tracks, reading/completing lessons, and personal progress tracking. |
 
-### 🔑 Default Seeded Credentials
+## 🔑 Seeded User Credentials
 
-When the database is initialized, the following users are automatically seeded for testing:
+When the database is initialized, the following user accounts are automatically seeded for testing purposes.
 
-| Email | Password | Role | Mapped User Type (`utype`) |
-| :--- | :--- | :--- | :--- |
-| `s@gmail.com` | `stl@123` | `Staff` | `staff` |
-| `staff1@gmail.com` | `stl@123` | `Staff` | `staff` |
-| `t@gmail.com` | `stl@123` | `Trainer` | `trainer` |
-| `l@gmail.com` | `stl@123` | `Learner` | `learner` |
+**Password for all seeded accounts:** `stl@123`
+
+| Email              | Role    | User Type (`utype`) |
+| ------------------ | ------- | ------------------- |
+| `s@gmail.com`      | Staff   | `staff`             |
+| `staff1@gmail.com` | Staff   | `staff`             |
+| `t@gmail.com`      | Trainer | `trainer`           |
+| `l@gmail.com`      | Learner | `learner`           |
+
+> **Note:** These credentials are intended for development and testing environments only.
 
 ---
 
