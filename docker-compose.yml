@@ -1,24 +1,4 @@
 services:
-  lxp-mysql:
-    image: mysql:8.0
-    container_name: lxp-mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - lxp_mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -p$$MYSQL_ROOT_PASSWORD --silent || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 40s
-    networks:
-      - lxp-network
-
   lxp-api:
     build:
       context: ./Backend
@@ -61,11 +41,9 @@ services:
     networks:
       - lxp-network
 
-volumes:
-  lxp_mysql_data:
-
 networks:
   lxp-network:
     driver: bridge
+
   common-db-net:
     external: true
